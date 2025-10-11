@@ -1,0 +1,106 @@
+<!-- Header -->
+<header class="bg-white/80 backdrop-blur border-b border-neutral-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Left: Logo text -->
+        <a href="#" class="text-xl font-bold text-neutral-900 tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-xl px-1" aria-label="AI Video Enhancer home">
+          AI Video Enhancer
+        </a>
+  
+        <!-- Center: Nav (hidden on mobile) -->
+        <nav class="hidden md:flex items-center gap-6" aria-label="Primary">
+          <a href="#features" class="text-neutral-700 hover:text-neutral-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-xl px-1">
+            Features
+          </a>
+          <a href="#pricing" class="text-neutral-700 hover:text-neutral-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-xl px-1">
+            Pricing
+          </a>
+          <a href="#faq" class="text-neutral-700 hover:text-neutral-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-xl px-1">
+            FAQ
+          </a>
+        </nav>
+  
+        <!-- Right: CTA -->
+        <button id="uploadBtn" type="button" class="inline-flex items-center justify-center bg-primary-500 hover:bg-primary-600 text-white px-4 sm:px-5 py-2 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500"
+          aria-label="Upload video">
+          Upload Video
+        </button>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Hero -->
+  <section class="bg-gradient-to-b from-neutral-50 to-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+      <div class="grid lg:grid-cols-2 items-center gap-10 lg:gap-16">
+        <!-- Copy -->
+        <div>
+          <h1 class="text-3xl sm:text-5xl font-extrabold text-neutral-900 tracking-tight">
+            Enhance & Upscale Your Videos — Fast, Simple
+          </h1>
+          <p class="mt-4 text-lg sm:text-xl text-neutral-600">
+            Improve clarity, remove noise, and upscale resolution with AI—no complex editing required.
+          </p>
+  
+          <!-- CTAs -->
+          <div class="mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
+            <button type="button" class="inline-flex items-center justify-center bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500"
+              aria-label="Upload your video from hero section">
+              Upload Video
+            </button>
+  
+            <a href="#how-it-works" class="inline-flex items-center justify-center px-6 py-3 rounded-2xl font-semibold border border-neutral-300 text-neutral-800 hover:bg-neutral-100 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500"
+              aria-label="Learn how AI Video Enhancer works">
+              How it works
+            </a>
+          </div>
+        </div>
+  
+        <!-- Visual: illustrative card -->
+        <div class="relative">
+          <div class="bg-white rounded-2xl shadow-xl ring-1 ring-neutral-200 p-4 sm:p-5">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm font-medium text-neutral-700">Preview</span>
+              <span class="text-xs text-neutral-500">Before → After</span>
+            </div>
+  
+            <!-- Thumbnail pair -->
+            <div class="grid grid-cols-2 gap-3">
+              <!-- Before -->
+              <div class="relative rounded-xl overflow-hidden ring-1 ring-neutral-200 bg-neutral-100 aspect-video">
+                <div class="absolute inset-0 bg-gradient-to-br from-neutral-200 to-neutral-100"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span class="text-xs font-medium text-neutral-700 bg-white/80 px-2 py-1 rounded-full shadow">Before</span>
+                </div>
+                <!-- Play glyph -->
+                <div class="absolute bottom-2 left-2 inline-flex items-center justify-center w-7 h-7 rounded-full bg-neutral-900/80">
+                  <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M8 5v14l11-7z"></path>
+                  </svg>
+                </div>
+              </div>
+  
+              <!-- After -->
+              <div class="relative rounded-xl overflow-hidden ring-1 ring-primary-200 bg-neutral-100 aspect-video">
+                <div class="absolute inset-0 bg-gradient-to-br from-primary-100 to-white"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span class="text-xs font-medium text-neutral-700 bg-white/80 px-2 py-1 rounded-full shadow">After</span>
+                </div>
+                <!-- Play glyph -->
+                <div class="absolute bottom-2 left-2 inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary-600/90">
+                  <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M8 5v14l11-7z"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Caption -->
+            <p class="mt-3 text-xs text-neutral-500">
+              Sample frames illustrating AI denoise and upscaling improvements.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

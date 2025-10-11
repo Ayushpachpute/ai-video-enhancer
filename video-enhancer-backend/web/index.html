@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Video Enhancer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { primary: {50:'#f0f9ff',100:'#e0f2fe',500:'#0ea5e9',600:'#0284c7',700:'#0369a1'}, neutral: {50:'#fafafa',100:'#f5f5f5',200:'#e5e5e5',300:'#d4d4d4',400:'#a3a3a3',500:'#737373',600:'#525252',700:'#404040',800:'#262626',900:'#171717'} }, borderRadius: {'2xl':'1rem'} } } };
+  </script>
+</head>
+<body class="bg-neutral-50 text-neutral-800 font-sans">
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <h1 class="text-2xl font-bold text-neutral-900">AI Video Enhancer</h1>
+
+    <div id="uploader" class="mt-6" role="region" aria-label="Video upload area">
+      <div id="dropZone" class="group relative rounded-2xl border border-dashed border-neutral-300 bg-white p-6 text-center shadow-sm hover:shadow transition focus-within:ring-2 focus-within:ring-primary-500 cursor-pointer" tabindex="0">
+        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary-600">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3a1 1 0 0 1 1 1v9.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a 1 1 0 0 1-1.414 0l-4-4A1 1 0 1 1 8.707 11.293L11 13.586V4a1 1 0 0 1 1-1z"></path><path d="M5 15a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2a1 1 0 1 0-2 0v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2a1 1 0 0 0-1-1z"></path></svg>
+        </div>
+        <h3 class="mt-4 text-lg font-semibold text-neutral-900">Drag & drop your video</h3>
+        <p class="mt-1 text-sm text-neutral-600">or</p>
+        <div class="mt-4">
+          <button id="chooseFileBtn" class="w-full sm:w-auto inline-flex items-center justify-center bg-primary-500 hover:bg-primary-600 text-white px-5 py-2.5 rounded-2xl font-semibold shadow-lg min-h-[44px] min-w-[44px]">Choose file</button>
+          <input id="fileInput" type="file" accept="video/mp4,video/quicktime,video/webm" class="sr-only" aria-hidden="true" />
+        </div>
+        <p class="mt-3 text-xs text-neutral-500">Supported: mp4, mov, webm • Max size: 300MB</p>
+      </div>
+
+      <div id="uploaderMsg" class="mt-3 text-sm text-red-600 min-h-[1.25rem]" aria-live="polite"></div>
+      <div id="statusArea" class="mt-2 text-sm text-neutral-700 min-h-[1.25rem]" aria-live="polite"></div>
+
+      <div id="previewCard" class="mt-6 hidden rounded-2xl bg-white p-4 sm:p-5 shadow ring-1 ring-neutral-200">
+        <div class="flex flex-col sm:flex-row items-start gap-4">
+          <div class="w-full sm:w-32 aspect-video overflow-hidden rounded-xl ring-1 ring-neutral-200 bg-neutral-100 flex items-center justify-center">
+            <img id="thumbImg" alt="Video thumbnail preview" class="w-full h-full object-cover hidden" />
+            <div id="thumbFallback" class="text-neutral-400">
+              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4h14a1 1 0 0 1 1 1v12.5l-3.5-3.5a1 1 0 0 0-.707-.293H7a1 1 0 0 0-.707.293L4 17.586V5a1 1 0 0 1 1-1z"></path><path d="M8 9.5A1.5 1.5 0 1 0 8 6.5a1.5 1.5 0 0 0 0 3z"></path></svg>
+            </div>
+          </div>
+          <div class="flex-1 w-full">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="min-w-0">
+                <p id="fileName" class="font-medium text-neutral-900 truncate">—</p>
+                <p id="fileMeta" class="text-sm text-neutral-600">—</p>
+              </div>
+              <div class="flex flex-col sm:flex-row items-stretch gap-2 w-full sm:w-auto">
+                <select id="modelSelect" class="w-full sm:w-auto rounded-2xl border border-neutral-300 px-3 py-2.5 bg-white text-sm text-neutral-800">
+                  <option value="realesrgan-x4plus">General</option>
+                  <option value="realesrgan-x4plus-face">Face</option>
+                  <option value="realesrgan-x4plus-anime">Anime</option>
+                  <option value="realesr-animevideov3-x2">AnimeVideoV3 x2</option>
+                  <option value="realesr-animevideov3-x3">AnimeVideoV3 x3</option>
+                  <option value="realesr-animevideov3-x4">AnimeVideoV3 x4</option>
+                </select>
+                <button id="startEnhance" class="w-full sm:w-auto inline-flex items-center justify-center bg-primary-500 hover:bg-primary-600 text-white px-4 sm:px-5 py-2.5 rounded-2xl font-semibold shadow-lg min-h-[44px] min-w-[44px]">Start Enhance</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section id="result" class="hidden mt-8" aria-label="Enhanced video result"></section>
+    </div>
+  </main>
+
+  <!-- Simple error modal -->
+  <div id="errorModal" class="hidden" role="alertdialog" aria-modal="true" aria-labelledby="errorTitle" aria-describedby="errorMessageLive">
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/40" data-dismiss="true"></div>
+      <div class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl ring-1 ring-neutral-200">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 id="errorTitle" class="text-lg font-semibold text-neutral-900">Something went wrong</h2>
+            <p id="errorMessageLive" class="mt-1 text-sm text-neutral-700" aria-live="assertive">Please try again.</p>
+          </div>
+          <button type="button" class="text-neutral-500 hover:text-neutral-700" data-dismiss="true">&#10005;</button>
+        </div>
+        <div class="mt-4 flex items-center justify-end gap-2">
+          <button id="errorOkBtn" class="w-full sm:w-auto inline-flex items-center justify-center bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-2xl font-semibold shadow min-h-[44px] min-w-[44px]">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Same-origin API
+    const API_BASE = '/api';
+
+    (function(){
+      function ensure(){
+        const m=document.getElementById('errorModal');
+        if(!m) return null;
+        m.querySelectorAll('[data-dismiss="true"]').forEach(el=>el.addEventListener('click',hide));
+        const ok=document.getElementById('errorOkBtn');
+        if(ok) ok.addEventListener('click',hide);
+        return m;
+      }
+      function show(msg,title){
+        const m=ensure(); if(!m) return;
+        m.querySelector('#errorTitle').textContent=title||'Something went wrong';
+        m.querySelector('#errorMessageLive').textContent=msg||'Please try again.';
+        m.classList.remove('hidden'); m.style.display='block'; document.body.style.overflow='hidden';
+      }
+      function hide(){ const m=document.getElementById('errorModal'); if(m){ m.classList.add('hidden'); m.style.display='none'; } document.body.style.overflow=''; }
+      window.showErrorModal=show; window.hideErrorModal=hide;
+    })();
+
+    (function(){
+      const MAX = 300*1024*1024; const TYPES=['video/mp4','video/quicktime','video/webm'];
+      const dz = document.getElementById('dropZone');
+      const fi = document.getElementById('fileInput');
+      const choose = document.getElementById('chooseFileBtn');
+      const msg = document.getElementById('uploaderMsg');
+      const statusArea = document.getElementById('statusArea');
+      const card = document.getElementById('previewCard');
+      const fileNameEl = document.getElementById('fileName');
+      const fileMetaEl = document.getElementById('fileMeta');
+      const thumbImg = document.getElementById('thumbImg');
+      const thumbFallback = document.getElementById('thumbFallback');
+
+      function setMsg(text,isErr=true){ msg.textContent=text||''; msg.className='mt-3 text-sm '+(isErr?'text-red-600':'text-green-700'); }
+      function setStatus(text,isErr=false){ statusArea.textContent=text||''; statusArea.className='mt-2 text-sm '+(isErr?'text-red-600':'text-neutral-700'); }
+      function fmt(bytes){ if(bytes===0) return '0 B'; const k=1024; const u=['B','KB','MB','GB']; const i=Math.floor(Math.log(bytes)/Math.log(k)); return (bytes/Math.pow(k,i)).toFixed(2)+' '+u[i]; }
+
+      function validate(file){ if(!file) return 'No file selected.'; if(!TYPES.includes(file.type)) return 'Unsupported format. Please upload MP4/MOV/WEBM.'; if(file.size>MAX) return 'File is too large. Max 300MB.'; return null; }
+
+      function genThumb(file){ return new Promise(res=>{ const url=URL.createObjectURL(file); const v=document.createElement('video'); v.preload='metadata'; v.muted=true; v.src=url; const clean=()=>{ v.pause(); v.src=''; URL.revokeObjectURL(url); }; const cap=()=>{ try{ const c=document.createElement('canvas'); const w=v.videoWidth||320, h=v.videoHeight||180; c.width=w; c.height=h; c.getContext('2d').drawImage(v,0,0,w,h); res(c.toDataURL('image/jpeg',0.8)); }catch{ res(null);} clean(); };
+        v.addEventListener('loadedmetadata',()=>{ const t=Math.min(0.1,(v.duration||1)-0.01); const onS=()=>{ v.removeEventListener('seeked',onS); cap(); }; v.addEventListener('seeked',onS); try{ v.currentTime=t>0?t:0; }catch{ v.play().then(()=>{ v.pause(); v.currentTime=t>0?t:0; }).catch(cap); } }, {once:true});
+        v.addEventListener('error',()=>{ clean(); res(null); }, {once:true});
+      }); }
+
+      function showPreview(file){ fileNameEl.textContent=file.name; fileMetaEl.textContent=(file.type||'video')+' • '+fmt(file.size); card.classList.remove('hidden'); thumbImg.classList.add('hidden'); thumbFallback.classList.remove('hidden'); genThumb(file).then(u=>{ if(u){ thumbImg.src=u; thumbImg.classList.remove('hidden'); thumbFallback.classList.add('hidden'); } }); }
+
+      function handle(file){ const err=validate(file); if(err){ setMsg(err,true); setStatus('',false); card.classList.add('hidden'); if(/Unsupported/.test(err)) showErrorModal(err,'Unsupported format'); if(/too large|300MB/i.test(err)) showErrorModal(err,'File too big'); return; } setMsg(''); setStatus('Ready to enhance'); showPreview(file); }
+
+      choose.addEventListener('click',()=>fi.click());
+      dz.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fi.click(); } });
+      fi.addEventListener('change',e=>{ const f=e.target.files&&e.target.files[0]; if(f) handle(f); });
+      ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{ e.preventDefault(); e.stopPropagation(); dz.classList.add('ring-2','ring-primary-500','bg-primary-50/40'); }));
+      ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{ e.preventDefault(); e.stopPropagation(); dz.classList.remove('ring-2','ring-primary-500','bg-primary-50/40'); }));
+      dz.addEventListener('drop',e=>{ const dt=e.dataTransfer; const f=dt&&dt.files&&dt.files[0]; if(f) handle(f); });
+    })();
+
+    function startUpload(file){
+      return new Promise((resolve,reject)=>{
+        const form=new FormData(); form.append('file',file);
+        const modelSel = document.getElementById('modelSelect');
+        if(modelSel && modelSel.value){ form.append('model', modelSel.value); }
+        const xhr=new XMLHttpRequest(); xhr.open('POST', API_BASE + '/upload', true); xhr.responseType='json';
+        xhr.onerror=()=>{ showErrorModal('Network error during upload.','Upload failed'); reject(new Error('network')); };
+        xhr.onload=()=>{ if(xhr.status>=200&&xhr.status<300){ const data=xhr.response||{}; const id=data.jobId||data.id||data.jobID; if(id){ resolve(String(id)); } else { showErrorModal('Unexpected server response.','Upload failed'); reject(new Error('bad response')); } } else { showErrorModal('Upload failed ('+xhr.status+').','Upload failed'); reject(new Error('status '+xhr.status)); } };
+        xhr.send(form);
+      });
+    }
+
+    function startPollingStatus(jobId){
+      const statusArea=document.getElementById('statusArea');
+      let stopped=false;
+      function setStatus(t,err){ statusArea.textContent=t||''; statusArea.className='mt-2 text-sm '+(err?'text-red-600':'text-neutral-700'); }
+      async function tick(){
+        if(stopped) return;
+        try{
+          const res=await fetch(API_BASE + '/status/' + encodeURIComponent(jobId));
+          if(!res.ok) throw new Error('HTTP '+res.status);
+          const data=await res.json();
+          const s=data.status||''; const p=typeof data.progress==='number'?data.progress:undefined; const m=data.message||s||'';
+          if(p!=null) setStatus(`${m} ${p}%`, false); else setStatus(m,false);
+          if(s==='completed' && data.resultUrl){ setStatus('Completed',false); showResult(data.resultUrl,{}); stopped=true; return; }
+          if(s==='failed' || s==='error'){ setStatus(data.message||'Processing failed',true); stopped=true; return; }
+        }catch(e){ setStatus('Reconnecting…', false); }
+        if(!stopped) setTimeout(tick,2000);
+      }
+      tick();
+      return { stop(){ stopped=true; } };
+    }
+
+    function showResult(resultUrl, metadata={}){
+      const container=document.getElementById('result'); if(!container) return;
+      const name=metadata.filename||'enhanced-video';
+      container.innerHTML = `
+        <div class="bg-white rounded-2xl shadow-xl ring-1 ring-neutral-200 p-4 sm:p-6">
+          <div class="aspect-video w-full overflow-hidden rounded-xl ring-1 ring-neutral-200 bg-neutral-100">
+            <video class="w-full h-full object-contain" controls playsinline preload="metadata">
+              <source src="${resultUrl}" type="video/mp4" />
+            </video>
+          </div>
+          <div class="mt-4 flex flex-col sm:flex-row gap-3">
+            <a href="${resultUrl}" download="${name}" class="w-full sm:w-auto inline-flex items-center justify-center bg-primary-500 hover:bg-primary-600 text-white px-5 py-2.5 rounded-2xl font-semibold shadow-lg">Download</a>
+          </div>
+        </div>`;
+      container.classList.remove('hidden');
+      container.scrollIntoView({behavior:'smooth'});
+    }
+
+    (function(){
+      const btn=document.getElementById('startEnhance');
+      const fi=document.getElementById('fileInput');
+      const statusArea=document.getElementById('statusArea');
+      function loading(on){ if(on){ btn.disabled=true; btn.dataset.originalText=btn.textContent; btn.textContent='Starting…'; } else { btn.disabled=false; btn.textContent=btn.dataset.originalText||'Start Enhance'; } }
+      btn.addEventListener('click', async ()=>{
+        const file = fi.files && fi.files[0];
+        if(!file){ const m=document.getElementById('uploaderMsg'); if(m){ m.textContent='Please select a video file before starting.'; m.className='mt-3 text-sm text-red-600'; } showErrorModal('Please select a video file before starting.','No file selected'); return; }
+        try{
+          loading(true);
+          const modelSel=document.getElementById('modelSelect');
+          const model = modelSel && modelSel.value ? modelSel.value : 'realesr-general-x4v3';
+          statusArea.textContent='Uploading… (model: ' + model + ')';
+          const jobId = await startUpload(file);
+          window.currentJobId = jobId;
+          statusArea.textContent='Queued';
+          startPollingStatus(jobId);
+        }catch(e){ /* handled via modal */ }
+        finally{ loading(false); }
+      });
+    })();
+  </script>
+</body>
+</html>

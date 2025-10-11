@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Video Enhancer - Transform Your Videos with AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1'
+                        },
+                        neutral: {
+                            50: '#fafafa',
+                            100: '#f5f5f5',
+                            200: '#e5e5e5',
+                            300: '#d4d4d4',
+                            400: '#a3a3a3',
+                            500: '#737373',
+                            600: '#525252',
+                            700: '#404040',
+                            800: '#262626',
+                            900: '#171717'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-neutral-50 text-neutral-800 font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-neutral-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center" aria-label="AI Video Enhancer Logo">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <span class="ml-3 text-xl font-bold text-neutral-900">AI Video Enhancer</span>
+                </div>
+                
+                <!-- Upload CTA -->
+                <button class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-2xl font-semibold transition-colors duration-200 shadow-lg hover:shadow-xl" aria-label="Upload video">
+                    Upload Video
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-primary-50 to-neutral-100 py-16 sm:py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 mb-6">
+                Transform Your Videos with
+                <span class="text-primary-500">AI Magic</span>
+            </h1>
+            <p class="text-xl sm:text-2xl text-neutral-600 max-w-3xl mx-auto mb-12">
+                Enhance video quality, upscale resolution, and restore old footage using cutting-edge artificial intelligence
+            </p>
+            
+            <!-- Main CTA -->
+            <button class="bg-primary-500 hover:bg-primary-600 text-white px-12 py-4 rounded-2xl text-xl font-semibold transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-1" aria-label="Get started with video enhancement">
+                Get Started Free
+            </button>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <!-- Upload Widget Container -->
+        <div id="uploader" class="mb-12" role="region" aria-label="Video upload area">
+            <!-- Uploader will be injected here -->
+        </div>
+
+        <!-- Progress Modal Container -->
+        <div id="progressModal" class="hidden" role="dialog" aria-modal="true" aria-label="Video processing progress">
+            <!-- Progress modal will be injected here -->
+        </div>
+
+        <!-- Result Player Container -->
+        <div id="result" class="hidden" role="region" aria-label="Enhanced video result">
+            <!-- Result player will be injected here -->
+        </div>
+    </main>
+
+    <!-- Features Section -->
+    <section class="bg-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
+                    Powerful AI Enhancement Features
+                </h2>
+                <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
+                    Professional-grade video enhancement tools powered by advanced machine learning
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-neutral-50 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-200">
+                    <div class="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-neutral-900 mb-3">Quality Enhancement</h3>
+                    <p class="text-neutral-600">Improve video clarity, reduce noise, and enhance overall visual quality with AI-powered algorithms.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-neutral-50 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-200">
+                    <div class="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-neutral-900 mb-3">Resolution Upscaling</h3>
+                    <p class="text-neutral-600">Scale up your videos to higher resolutions while maintaining crisp details and smooth edges.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-neutral-50 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-200">
+                    <div class="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-neutral-900 mb-3">Fast Processing</h3>
+                    <p class="text-neutral-600">Get your enhanced videos quickly with our optimized AI processing pipeline and cloud infrastructure.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-neutral-900 text-neutral-300 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-primary-500 rounded-xl flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="ml-2 text-lg font-bold text-white">AI Video Enhancer</span>
+                    </div>
+                    <p class="text-neutral-400 max-w-md">
+                        Transform your videos with cutting-edge AI technology. Professional quality enhancement made simple.
+                    </p>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white transition-colors" aria-label="Features page">Features</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" aria-label="Pricing page">Pricing</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" aria-label="API documentation">API</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white transition-colors" aria-label="Help center">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" aria-label="Contact support">Contact</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" aria-label="Privacy policy">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-neutral-800 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center">
+                <p class="text-neutral-400 text-sm mb-4 sm:mb-0">
+                    © 2024 AI Video Enhancer. All rights reserved.
+                </p>
+                
+                <!-- Upgrade Button -->
+                <button class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-2xl font-semibold transition-colors duration-200 shadow-lg hover:shadow-xl" aria-label="Upgrade to premium plan">
+                    Upgrade to Pro
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Initialize the application
+        function init() {
+            // TODO: Windsurf will inject uploader functionality here
+            // This will handle file selection, drag & drop, and upload initiation
+            
+            // TODO: Windsurf will inject progress modal functionality here  
+            // This will show upload progress, processing status, and estimated time
+            
+            // TODO: Windsurf will inject result player functionality here
+            // This will display the enhanced video with before/after comparison
+            
+            console.log('AI Video Enhancer initialized');
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

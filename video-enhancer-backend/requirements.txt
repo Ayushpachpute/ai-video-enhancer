@@ -1,0 +1,5 @@
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+sse-starlette==2.1.0
+python-multipart==0.0.9
+# Note: FFmpeg and Real-ESRGAN binaries are auto-downloaded/used locally by the app; no pip packages required.

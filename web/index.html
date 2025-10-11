@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ratatat — Enhance Your Videos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- React (No build, CDN) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    :root {
+      /* Palette */
+      --accent-grad: linear-gradient(135deg, #E4E4E7 10%, #C5C5C9 90%);
+      --heading-grad: linear-gradient(135deg, #FFFFFF 10%, #96989C 90%);
+      --text-body: #CFD0D8;
+      --bg: #141415;
+      --card: #2A2A2D;
+      --sec1: #141415;
+      --sec2: #3D3D42;
+      --sec3: #515257;
+    }
+    html, body { height: 100%; }
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; color: var(--text-body); }
+    .hero-grad { background-image: radial-gradient(70rem 50rem at 10% -10%, rgba(197,197,201,0.06), transparent), radial-gradient(70rem 50rem at 110% 10%, rgba(81,82,87,0.06), transparent); }
+    .bg-animated { background: var(--bg); }
+    .glow { box-shadow: 0 10px 30px rgba(197,197,201,0.12), 0 6px 12px rgba(81,82,87,0.12); }
+    .drop-highlight { outline: 2px dashed var(--sec3); outline-offset: -10px; background: rgba(81,82,87,0.08); }
+    .divider { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--sec3); cursor: ew-resize; }
+    .heading-gradient { background-image: var(--heading-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  </style>
+</head>
+<body class="min-h-full text-slate-100 bg-animated">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const API = {
+      upload: "/api/upload",
+      enhance: "/api/enhance",
+      statusQuery: (jobId) => `/api/status?jobId=${encodeURIComponent(jobId)}`,
+    };
+
+    function useETA(progress) {
+      const [etaLabel, setEtaLabel] = React.useState("");
+      const startedRef = React.useRef(null);
+      const lastUpdateRef = React.useRef({ t: null, p: 0 });
+      React.useEffect(() => {
+        const now = Date.now();
+        if (progress > 0 && progress < 100) {
+          if (!startedRef.current) startedRef.current = now;
+          const elapsed = (now - startedRef.current) / 1000;
+          const rate = progress > 0 ? elapsed / progress : 0; // sec per %
+          const remaining = Math.max(0, 100 - progress);
+          const est = rate * remaining;
+          const m = Math.floor(est / 60);
+          const s = Math.max(0, Math.floor(est % 60));
+          setEtaLabel(`Estimated time: ${m}m ${s}s remaining`);
+        } else if (progress >= 100) {
+          setEtaLabel("Done");
+        } else {
+          setEtaLabel("");
+        }
+        lastUpdateRef.current = { t: now, p: progress };
+      }, [progress]);
+      return etaLabel;
+    }
+
+    function ProgressBar({ progress, message }) {
+      const label = useETA(progress);
+      return (
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-semibold">Progress</span>
+            <span className="text-sm" style={{ color: '#96989C' }}>{message || (progress ? `${progress}%` : "Idle")}</span>
+          </div>
+          <div className="w-full h-3 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--sec2)' }}>
+            <div className="h-3 transition-all" style={{ width: `${Math.max(0, Math.min(100, progress||0))}%`, backgroundImage: 'var(--accent-grad)' }} />
+          </div>
+          {label && <p className="text-xs mt-2" style={{ color: '#96989C' }}>{label}</p>}
+          {progress > 0 && progress < 100 && (
+            <div className="mt-4 flex items-center gap-2 animate-pulse" style={{ color: 'var(--text-body)' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" /></svg>
+              <span>Hang tight! We’re upscaling your video with AI 🧠✨</span>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function Comparison({ originalUrl, enhancedUrl }) {
+      const containerRef = React.useRef(null);
+      const [pos, setPos] = React.useState(50);
+      const onDrag = (e) => {
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+        setPos((x / rect.width) * 100);
+      };
+      const start = (e) => {
+        e.preventDefault();
+        const move = (ev) => onDrag(ev.touches ? ev.touches[0] : ev);
+        const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); window.removeEventListener('touchmove', move); window.removeEventListener('touchend', up); };
+        window.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', up);
+        window.addEventListener('touchmove', move);
+        window.addEventListener('touchend', up);
+      };
+      return (
+        <div className="w-full">
+          <div className="hidden md:grid grid-cols-2 gap-4">
+            <video src={originalUrl} controls className="w-full rounded-xl border border-slate-800" />
+            <video src={enhancedUrl} controls className="w-full rounded-xl border border-slate-800" />
+          </div>
+          <div className="md:hidden">
+            <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-slate-800" ref={containerRef}>
+              <video src={originalUrl} className="absolute inset-0 w-full h-full object-contain bg-black" muted autoPlay loop />
+              <video src={enhancedUrl} className="absolute inset-0 h-full object-contain bg-transparent" style={{ width: `${pos}%` }} muted autoPlay loop />
+              <div className="divider" style={{ left: `calc(${pos}% - 1.5px)` }} onMouseDown={start} onTouchStart={start} />
+            </div>
+            <div className="flex gap-3 mt-3">
+              <button className="rounded-lg px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 transition w-full">🎬 Play Original</button>
+              <button className="rounded-lg px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 transition w-full">🎞️ Play Enhanced</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [file, setFile] = React.useState(null);
+      const [fileMeta, setFileMeta] = React.useState("");
+      const [model, setModel] = React.useState("realesr-animevideov3-x4");
+      const [jobId, setJobId] = React.useState(null);
+      const [progress, setProgress] = React.useState(0);
+      const [message, setMessage] = React.useState("Idle");
+      const [resultUrl, setResultUrl] = React.useState(null);
+      const [origUrl, setOrigUrl] = React.useState(null);
+      const fileInputRef = React.useRef(null);
+
+      React.useEffect(() => {
+        // Smooth scroll CTA
+        const link = document.getElementById('cta');
+        if (link) link.addEventListener('click', (e) => {
+          e.preventDefault();
+          document.getElementById('upload-sec')?.scrollIntoView({ behavior: 'smooth' });
+        });
+      }, []);
+
+      function validateAndSetFile(f) {
+        const allowed = ["video/mp4", "video/quicktime", "video/x-matroska"];
+        if (!allowed.includes(f.type)) throw new Error("Unsupported format. Use MP4, MOV, or MKV.");
+        if (f.size > 100 * 1024 * 1024) throw new Error("File too large. Max 100 MB.");
+        setFile(f);
+        setFileMeta(`${f.name} • ${(f.size/1024/1024).toFixed(1)} MB`);
+        setResultUrl(null);
+        setOrigUrl(null);
+        setProgress(0);
+        setMessage("Ready to enhance");
+      }
+
+      async function startFlow() {
+        if (!file) return;
+        try {
+          setMessage("Uploading…"); setProgress(3);
+          const form = new FormData(); form.append('file', file); form.append('model', model);
+          const up = await axios.post(API.upload, form);
+          const jid = up.data.jobId; setJobId(jid);
+
+          // We don't know the uploaded public URL; keep original as blob URL for comparison
+          setOrigUrl(URL.createObjectURL(file));
+
+          setMessage("Starting enhancement…");
+          await axios.post(API.enhance, { jobId: jid, model });
+
+          setMessage("Queued…"); setProgress(8);
+          const poll = setInterval(async () => {
+            try {
+              const s = await axios.get(API.statusQuery(jid));
+              const data = s.data;
+              if (typeof data.progress === 'number') setProgress(data.progress);
+              if (data.message) setMessage(data.message);
+              if (data.status === 'completed' && data.resultUrl) {
+                clearInterval(poll);
+                setProgress(100); setMessage('Done');
+                setResultUrl(new URL(data.resultUrl, window.location.origin).toString());
+              } else if (data.status === 'failed') {
+                clearInterval(poll); setProgress(100); setMessage('Failed');
+                alert(`Enhancement failed: ${data.message || 'Unknown error'}`);
+              }
+            } catch (e) {
+              clearInterval(poll);
+              alert(e.message || String(e));
+            }
+          }, 1200);
+        } catch (e) {
+          alert(e.message || String(e));
+        }
+      }
+
+      // Upload UI handlers
+      const onDrop = (e) => {
+        e.preventDefault(); e.stopPropagation();
+        const f = e.dataTransfer?.files?.[0]; if (f) try { validateAndSetFile(f); } catch(err){ alert(err.message); }
+        e.currentTarget.classList.remove('drop-highlight');
+      };
+      const onDrag = (e) => { e.preventDefault(); e.stopPropagation(); if (e.type==='dragenter'||e.type==='dragover') e.currentTarget.classList.add('drop-highlight'); else e.currentTarget.classList.remove('drop-highlight'); };
+      const onPick = (e) => { const f = e.target.files?.[0]; if (f) try { validateAndSetFile(f); } catch(err){ alert(err.message);} };
+
+      return (
+        <div>
+          {/* Hero */}
+          <header className="hero-grad">
+            <div className="max-w-6xl mx-auto px-6 pt-14 pb-10 md:pb-16 text-center">
+              <h1 className="text-4xl md:text-6xl font-extrabold leading-tight heading-gradient">
+                Enhance Your Videos for Free – Experience True HD & 4K AI Quality
+              </h1>
+              <p className="mt-4 text-slate-300 text-lg md:text-xl">
+                Just upload your video, let AI do its magic, and download the enhanced version in minutes.
+              </p>
+              <div className="mt-8 flex items-center justify-center">
+                <a id="cta" href="#upload-sec" className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition shadow" style={{ backgroundImage: 'var(--accent-grad)', color: '#141415' }}>
+                  Upload & Enhance Now
+                </a>
+              </div>
+            </div>
+          </header>
+
+          {/* Upload & Progress */}
+          <main id="upload-sec" className="max-w-6xl mx-auto px-6 pb-24">
+            <section className="mt-6 md:mt-10 rounded-2xl p-6 md:p-8 backdrop-blur glow" style={{ backgroundColor: 'var(--card)', border: '1px solid var(--sec2)' }}>
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Upload */}
+                <div>
+                  <h2 className="text-2xl font-bold">Upload Your Video</h2>
+                  <p className="mt-2" style={{ color: '#96989C' }}>Supported: MP4, MOV, MKV. <span className="font-semibold" style={{ color: 'var(--text-body)' }}>Max file size: 100 MB</span></p>
+
+                  <div
+                    className="mt-4 flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition p-8 text-center cursor-pointer"
+                    style={{ borderColor: 'var(--sec3)' }}
+                    onDragEnter={onDrag} onDragOver={onDrag} onDragLeave={onDrag} onDrop={onDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" className="text-slate-300">
+                      <path d="M12 16V4m0 12l-3-3m3 3l3-3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M20 16.5a4.5 4.5 0 00-4.5-4.5h-.9A5.5 5.5 0 109 5.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <p className="mt-3">Drag & drop your video here</p>
+                    <p className="text-slate-400 text-sm">or click to browse</p>
+                    <input ref={fileInputRef} type="file" accept="video/mp4,video/quicktime,video/x-matroska" className="hidden" onChange={onPick} />
+                  </div>
+
+                  <div className="mt-3 text-sm text-slate-300">{fileMeta}</div>
+
+                  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm mb-1">Content Type</label>
+                      <select value={model} onChange={(e)=>setModel(e.target.value)} className="w-full rounded-lg px-3 py-2" style={{ backgroundColor: '#1E1E20', border: '1px solid var(--sec2)', color: 'var(--text-body)' }}>
+                        <option value="general">General</option>
+                        <option value="face">Face</option>
+                        <option value="anime">Anime</option>
+                        <option value="realesr-animevideov3-x2">AnimeVideoV3 x2</option>
+                        <option value="realesr-animevideov3-x3">AnimeVideoV3 x3</option>
+                        <option value="realesr-animevideov3-x4">AnimeVideoV3 x4</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm mb-1">Target</label>
+                      <input className="w-full rounded-lg px-3 py-2" style={{ backgroundColor: '#1E1E20', border: '1px solid var(--sec2)', color: 'var(--text-body)' }} value="4K (2160p)" disabled />
+                    </div>
+                  </div>
+
+                  <button onClick={startFlow} disabled={!file} className="mt-6 inline-flex items-center justify-center w-full md:w-auto rounded-xl px-5 py-3 font-semibold shadow transition disabled:opacity-50 disabled:cursor-not-allowed" style={{ backgroundImage: 'var(--accent-grad)', color: '#141415' }}>
+                    Upload & Enhance Now
+                  </button>
+                </div>
+
+                {/* Progress & Result trigger */}
+                <div>
+                  <ProgressBar progress={progress} message={message} />
+                  {resultUrl && (
+                    <div className="mt-4">
+                      <a href={resultUrl} download className="inline-flex items-center gap-2 rounded-lg px-4 py-2 font-semibold transition w-full md:w-auto" style={{ backgroundImage: 'var(--accent-grad)', color: '#141415' }}>Download Enhanced</a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+
+            {/* Result Comparison */}
+            {resultUrl && (
+              <section className="mt-10 rounded-2xl p-6 md:p-8 backdrop-blur" style={{ backgroundColor: 'var(--card)', border: '1px solid var(--sec2)' }}>
+                <h3 className="text-xl font-semibold mb-4">Before vs After</h3>
+                <Comparison originalUrl={origUrl} enhancedUrl={resultUrl} />
+              </section>
+            )}
+
+            {/* Footer */}
+            <footer className="mt-12 text-center text-slate-500 text-sm">
+              <p>© {new Date().getFullYear()} Ratatat. All rights reserved.</p>
+              <p className="mt-1">Contact: support@example.com</p>
+            </footer>
+          </main>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
