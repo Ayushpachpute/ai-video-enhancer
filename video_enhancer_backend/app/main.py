@@ -12,7 +12,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pathlib import Path
 
-from . import utils, workers
+import utils
+import workers
 
 app = FastAPI(title="AI Video Enhancer Backend")
 
