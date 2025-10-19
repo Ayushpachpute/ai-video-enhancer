@@ -12,8 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pathlib import Path
 
-import utils
-import workers
+from . import utils, workers
 
 app = FastAPI(title="AI Video Enhancer Backend")
 
@@ -32,7 +31,7 @@ app.add_middleware(
 API_PREFIX = "/api"
 
 # Serve processed results as static files so frontend can access resultUrl returned by jobs
-app.mount("/results", StaticFiles(directory=utils.RESULTS_DIR, html=False), name="results")
+app.mount("/results", StaticFiles(directory=utils.RESULTS_DIR, html=False, check_dir=False), name="results")
 
 
 @app.on_event("startup")
